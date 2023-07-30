@@ -54,6 +54,8 @@ const deleteWorkout = async (req, res) => {
         return res.status(404).json({error: 'No such workout'});
     }
 
+
+
     const workout = await Workout.findOneAndDelete({_id: id});
 
     if(!workout){
@@ -65,12 +67,27 @@ const deleteWorkout = async (req, res) => {
 
 //update a workout
 const updateWorkout = async (req ,res) => {
+    
     const {id} = req.params;
-    console.log('hello');
+    
+    const {title,reps,load} = req.body;
+
+    let emptyFields = [];
 
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({error: 'No such workout'});
     }
+
+    
+
+    if(!title) emptyFields.push('title');
+    if(!reps) emptyFields.push('reps');
+    if(!load) emptyFields.push('load');
+    console.log(emptyFields);
+    if(emptyFields.length > 0){
+        return res.status(400).json({error: 'Please fill in all the fields',emptyFields})
+    }
+
 
     const workout = await Workout.findOneAndUpdate({_id: id},{
         ...req.body
